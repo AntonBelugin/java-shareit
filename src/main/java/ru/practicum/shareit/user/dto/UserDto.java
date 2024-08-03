@@ -1,19 +1,15 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.user.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-/**
- * TODO Sprint add-controllers.
- */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
-public class ItemDto {
-    Long id;
+public class UserDto {
+    long id;
+    String email;
     String name;
-    String description;
-    Boolean available;
 }
