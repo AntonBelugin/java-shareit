@@ -15,9 +15,9 @@ import java.util.*;
 @Primary
 @RequiredArgsConstructor
 public class ItemInMemoryStorage implements ItemStorage {
-    final private Map<Long, Item> items = new HashMap<>();
-    final UserStorage userStorage;
+    private final Map<Long, Item> items = new HashMap<>();
     private long currentId = 0L;
+    final UserStorage userStorage;
 
     @Override
     public Item add(long userId, Item item) {

@@ -17,8 +17,9 @@ import java.util.Objects;
 @Primary
 @RequiredArgsConstructor
 public class UserInMemoryStorage implements UserStorage {
+    private final Map<Long, User> users = new HashMap<>();
     private long currentId = 0L;
-    final private Map<Long, User> users = new HashMap<>();
+
 
     @Override
     public User add(User user) {
