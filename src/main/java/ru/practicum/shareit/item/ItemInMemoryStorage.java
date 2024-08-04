@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.UserStorage;
 
 import java.util.*;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 @Repository
 @Primary

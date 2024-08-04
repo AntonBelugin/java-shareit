@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 @Repository
 @Primary
