@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -19,8 +17,8 @@ import java.util.Objects;
 @Primary
 @RequiredArgsConstructor
 public class UserInMemoryStorage implements UserStorage {
-    final private Map<Long, User> users = new HashMap<>();
     private long currentId = 0L;
+    final private Map<Long, User> users = new HashMap<>();
 
     @Override
     public User add(User user) {

@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -18,8 +16,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ItemInMemoryStorage implements ItemStorage {
     final private Map<Long, Item> items = new HashMap<>();
-    private long currentId = 0L;
     final UserStorage userStorage;
+    private long currentId = 0L;
 
     @Override
     public Item add(long userId, Item item) {
