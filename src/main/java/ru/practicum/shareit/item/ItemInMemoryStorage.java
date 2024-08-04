@@ -18,15 +18,14 @@ import java.util.*;
 @Primary
 @RequiredArgsConstructor
 public class ItemInMemoryStorage implements ItemStorage {
-    Map<Long, Item> items = new HashMap<>();
-    Long currentId = 0L;
+    final private Map<Long, Item> items = new HashMap<>();
+    private long currentId = 0L;
     final UserStorage userStorage;
 
     @Override
     public Item add(long userId, Item item) {
         item.setId(getNextId());
         items.put(item.getId(), item);
-        userStorage.findById(userId).getItemsUser().put(item.getId(), item);
         return item;
     }
 
@@ -43,7 +42,7 @@ public class ItemInMemoryStorage implements ItemStorage {
     }
 
     @Override
-    public void testItem(long itemId) {
+    public void checkItem(long itemId) {
         if (!items.containsKey(itemId)) {
             throw new NotFoundException("Вещи с id " + itemId + " не существует");
         }

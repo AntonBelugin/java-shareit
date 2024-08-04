@@ -11,5 +11,5 @@ public interface UserStorage {
 
     User update(long id, User user);
 
-    void testUser(long id);
+    void checkUser(long id);
 }

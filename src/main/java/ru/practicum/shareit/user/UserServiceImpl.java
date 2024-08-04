@@ -19,27 +19,27 @@ public class UserServiceImpl implements UserService {
     final UserStorage userStorage;
 
     @Override
-    public UserDto add(User user) {
-        UserValidator.validateNotNull(user);
-        UserValidator.validateFormat(user);
-        return UserMapper.modelToDto(userStorage.add(user));
+    public UserDto add(UserDto user) {
+       // UserValidator.validateNotNull(user);
+       // UserValidator.validateFormat(user);
+        return UserMapper.modelToDto(userStorage.add(UserMapper.modelFromDto(user)));
     }
 
     @Override
     public UserDto findById(long id) {
-        userStorage.testUser(id);
+        userStorage.checkUser(id);
         return UserMapper.modelToDto(userStorage.findById(id));
     }
 
     @Override
     public void deleteById(long id) {
-        userStorage.testUser(id);
+        userStorage.checkUser(id);
         userStorage.deleteById(id);
     }
 
     @Override
-    public UserDto update(long id, User user) {
-        userStorage.testUser(id);
+    public UserDto update(long id, UserDto user) {
+        userStorage.checkUser(id);
         UserValidator.validateFormat(user);
         User oldUser = userStorage.findById(id);
         oldUser.setEmail(Optional.ofNullable(user.getEmail()).filter(email

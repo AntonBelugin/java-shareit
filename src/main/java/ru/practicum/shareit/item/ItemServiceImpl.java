@@ -23,24 +23,26 @@ public class ItemServiceImpl implements ItemService {
     final UserStorage userStorage;
 
     @Override
-    public ItemDto add(long userId, Item item) {
-        userStorage.testUser(userId);
-        ItemValidator.validateNotNull(item);
-        item.setOwnerId(userId);
-        return ItemMapper.modelToDto(itemStorage.add(userId, item));
+    public ItemDto add(long userId, ItemDto item) {
+        userStorage.checkUser(userId);
+        Item newItem = ItemMapper.modelFromDto(item);
+        newItem.setOwnerId(userId);
+        Item addItem = itemStorage.add(userId, newItem);
+        userStorage.findById(userId).getItemsUser().put(addItem.getId(), addItem);
+        return ItemMapper.modelToDto(addItem);
     }
 
     @Override
     public ItemDto findById(long id) {
-        itemStorage.testItem(id);
+        itemStorage.checkItem(id);
         return ItemMapper.modelToDto(itemStorage.findById(id));
     }
 
     @Override
-    public ItemDto update(long userId, long itemId, Item item) {
-        itemStorage.testItem(itemId);
-        userStorage.testUser(userId);
-        testOwner(userId, itemId);
+    public ItemDto update(long userId, long itemId, ItemDto item) {
+        itemStorage.checkItem(itemId);
+        userStorage.checkUser(userId);
+        checkOwner(userId, itemId);
         Item oldItem = itemStorage.findById(itemId);
         oldItem.setName(Optional.ofNullable(item.getName()).filter(name
                 -> !name.isBlank()).orElse(oldItem.getName()));
@@ -54,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findItemsByUser(long id) {
-        userStorage.testUser(id);
+        userStorage.checkUser(id);
         return userStorage.findById(id).getItemsUser().values().stream()
                 .map(ItemMapper::modelToDto).toList();
     }
@@ -65,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::modelToDto).toList();
     }
 
-    private void testOwner(long userId, long itemId) {
+    private void checkOwner(long userId, long itemId) {
         if (userId != itemStorage.findById(itemId).getOwnerId()) {
             throw new NotFoundException("Вещь с id " + itemId +
                     " не принадлежит пользователю с id " + userId);
@@ -75,6 +77,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findAll() {
         return itemStorage.findAll().stream()
-                .map(ItemMapper::modelToDto).toList();
+                .map(ItemMapper::modelToDto)
+                .toList();
     }
 }

@@ -12,7 +12,7 @@ interface ItemStorage {
 
     Item update(long id, Item item);
 
-    void testItem(long id);
+    void checkItem(long id);
 
     List<Item> searchByText(String text);
 

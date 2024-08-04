@@ -20,8 +20,8 @@ import java.util.Objects;
 @Primary
 @RequiredArgsConstructor
 public class UserInMemoryStorage implements UserStorage {
-    Map<Long, User> users = new HashMap<>();
-    Long currentId = 0L;
+    final private Map<Long, User> users = new HashMap<>();
+    private long currentId = 0L;
 
     @Override
     public User add(User user) {
@@ -45,13 +45,13 @@ public class UserInMemoryStorage implements UserStorage {
 
     @Override
     public User update(long id, User user) {
-        testEmail(user);
+        checkEmail(user);
         users.put(id, user);
         return user;
     }
 
     @Override
-    public void testUser(long userId) {
+    public void checkUser(long userId) {
         if (!users.containsKey(userId)) {
             throw new NotFoundException("Пользователя с id " + userId + " не существует");
         }
@@ -61,7 +61,7 @@ public class UserInMemoryStorage implements UserStorage {
         return ++currentId;
     }
 
-    private void testEmail(User user) {
+    private void checkEmail(User user) {
         for (User userOld : users.values()) {
             if (Objects.equals(userOld.getEmail(), user.getEmail())
                     && !Objects.equals(user.getId(), userOld.getId())) {
