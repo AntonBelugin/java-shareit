@@ -20,8 +20,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto add(UserDto user) {
-       // UserValidator.validateNotNull(user);
-       // UserValidator.validateFormat(user);
         return UserMapper.modelToDto(userStorage.add(UserMapper.modelFromDto(user)));
     }
 

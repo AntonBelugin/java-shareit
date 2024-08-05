@@ -15,10 +15,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class ItemDto {
     Long id;
-    @NotNull
     @NotBlank
     String name;
-    @NotNull
     @NotBlank
     String description;
     @NotNull

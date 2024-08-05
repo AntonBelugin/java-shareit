@@ -7,7 +7,7 @@ public class UserValidator {
     static void validateFormat(UserDto user) {
         if (!(user.getEmail() == null)) {
             if (!user.getEmail().contains("@")) {
-                throw new ValidationException("Неправильный Имейл");
+                throw new ValidationException("Неправильный адрес электронной почты");
             }
         }
     }
