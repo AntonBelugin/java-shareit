@@ -34,7 +34,7 @@ public class ItemInMemoryStorage implements ItemStorage {
     @Override
     public Item update(long userId, Item item) {
         items.put(item.getId(), item);
-        userStorage.findById(userId).getItemsUser().put(item.getId(), item);
+      //  userStorage.findById(userId).getItemsUser().put(item.getId(), item);
         return item;
     }
 

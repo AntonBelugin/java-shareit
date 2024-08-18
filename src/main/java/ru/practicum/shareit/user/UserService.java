@@ -2,7 +2,7 @@ package ru.practicum.shareit.user;
 
 import ru.practicum.shareit.user.dto.UserDto;
 
-interface UserService {
+public interface UserService {
     UserDto findById(long id);
 
     UserDto add(UserDto user);
