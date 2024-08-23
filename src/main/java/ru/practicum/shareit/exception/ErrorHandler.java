@@ -43,4 +43,13 @@ public class ErrorHandler {
                 e.getMessage()
         );
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handle(final AccessDeniedException e) {
+        return new ErrorResponse(
+                "Доступ не разрешен",
+                e.getMessage()
+        );
+    }
 }

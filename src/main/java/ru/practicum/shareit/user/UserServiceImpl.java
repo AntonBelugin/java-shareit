@@ -10,7 +10,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-//import ru.practicum.shareit.user.model.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,20 +19,18 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    final UserStorage userStorage;
     final UserRepository repository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto add(UserDto user) {
         checkEmail(user);
-        //return null;
-       return UserMapper.modelToDto(repository.save(UserMapper.modelFromDto(user)));  //add(UserMapper.modelFromDto(user)));
+       return UserMapper.modelToDto(repository.save(UserMapper.modelFromDto(user)));
     }
 
     @Override
     public UserDto findById(long id) {
         return UserMapper.modelToDto(getUser(id));
-
     }
 
     @Override
@@ -44,7 +41,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(long id, UserDto user) {
-       // userStorage.checkUser(id);
         UserValidator.validateFormat(user);
         checkEmail(user);
         User oldUser = getUser(id);
@@ -72,5 +68,4 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
-
 }

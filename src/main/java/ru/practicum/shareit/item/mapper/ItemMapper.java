@@ -12,6 +12,7 @@ public final class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .comments(item.getComments())
                 .build();
     }
 

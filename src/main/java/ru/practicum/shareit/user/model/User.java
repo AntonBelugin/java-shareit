@@ -4,10 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.model.Item;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * TODO Sprint add-controllers.
@@ -29,6 +25,4 @@ public class User {
     String name;
     @NotNull
     String email;
-    //@Builder.Default
-    //Map<Long, Item> itemsUser = new HashMap<>();
 }

@@ -5,9 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
+import java.util.List;
+
 /**
  * TODO Sprint add-bookings.
  */
+
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
@@ -18,31 +21,27 @@ public class BookingController {
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody BookingDto booking) {
         return bookingService.add(userId, booking);
     }
-/*
-    @GetMapping("/{id}")
-    public ItemDto findById(@PathVariable long id) {
-        return itemService.findById(id);
+
+    @PatchMapping("/{bookingId}")
+    public BookingDto approved(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long bookingId,
+                               @RequestParam(defaultValue = "") Boolean approved) {
+        return bookingService.approved(userId, bookingId, approved);
     }
 
-    @PatchMapping("/{id}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id,
-                          @RequestBody ItemDto item) {
-        return itemService.update(userId, id, item);
+    @GetMapping("/{id}")
+    public BookingDto findById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id) {
+        return bookingService.findById(userId, id);
     }
 
     @GetMapping
-    public List<ItemDto> findItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.findItemsByUser(userId);
+    public List<BookingDto> getAllByBooker(@RequestHeader("X-Sharer-User-Id") long bookerId,
+                                           @RequestParam(defaultValue = "ALL") String state) {
+        return bookingService.getAllByBooker(bookerId, state);
     }
 
-    @GetMapping("/search")
-    public List<ItemDto> searchByText(@RequestParam(defaultValue = "") String text) {
-        return itemService.searchByText(text);
+    @GetMapping("owner/")
+    public List<BookingDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
+                                           @RequestParam(defaultValue = "ALL") String state) {
+        return bookingService.getAllByOwner(ownerId, state);
     }
-
-    @GetMapping("/all")
-    public List<ItemDto> findAll() {
-        return itemService.findAll();
-    }
-    */
 }

@@ -20,7 +20,6 @@ public class UserInMemoryStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
     private long currentId = 0L;
 
-
     @Override
     public User add(User user) {
         if (users.containsValue(user)) {
