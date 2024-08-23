@@ -35,6 +35,6 @@ public class Booking {
     @NotNull
     LocalDateTime start;
     @NotNull
-    @Column(name="finish")
+    @Column(name = "finish")
     LocalDateTime end;
 }

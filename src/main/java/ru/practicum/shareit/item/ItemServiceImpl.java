@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -49,14 +48,14 @@ public class ItemServiceImpl implements ItemService {
         Item item = getItem(id);
         ItemDto itemDto = ItemMapper.modelToDto(item);
         if (userId == item.getOwnerId()) {
-            List<Booking> bookings = bookingRepository.
-                    findAllByItemIdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now());
+            List<Booking> bookings = bookingRepository
+                    .findAllByItemIdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now());
             if (!bookings.isEmpty()) {
                 Booking lastBooking = bookings.getFirst();
                 itemDto.setLastBooking(lastBooking.getStart());
             }
-            bookings = bookingRepository.
-                    findAllByItemIdAndStartAfterOrderByStartDesc(id, LocalDateTime.now());
+            bookings = bookingRepository
+                    .findAllByItemIdAndStartAfterOrderByStartDesc(id, LocalDateTime.now());
             if (!bookings.isEmpty()) {
                 Booking nextBooking = bookings.getFirst();
                 itemDto.setNextBooking(nextBooking.getStart());
@@ -90,8 +89,8 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isEmpty()) {
             return new ArrayList<>();
         } else {
-            return itemRepository.
-                    findByAvailableTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text)
+            return itemRepository
+                    .findByAvailableTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text)
                     .stream()
                     .map(ItemMapper::modelToDto).toList();
         }
@@ -101,10 +100,10 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(long userId, long itemId, CommentDto comment) {
         User user = UserMapper.modelFromDto(userService.findById(userId));
         Item item = ItemMapper.modelFromDto(findById(userId, itemId));
-        System.out.println(bookingRepository.
-                findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()));
-        if (bookingRepository.
-                findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
+        System.out.println(bookingRepository
+                .findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()));
+        if (bookingRepository
+                .findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
             throw new ValidationException("Вы не можете оставить комментарий," +
                     " потому что не бронировали вещь с id " + itemId);
         }
