@@ -8,7 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import java.util.List;
 
 /**
- * TODO Sprint add-bookings.
+ *  TODO Sprint add-bookings.
  */
 
 @RestController
