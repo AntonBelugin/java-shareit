@@ -13,7 +13,7 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "items", schema = "public")
+@Table(name = "items")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder

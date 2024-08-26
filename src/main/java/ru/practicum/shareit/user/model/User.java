@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
  */
 
 @Entity
-@Table(name = "users", schema = "public")
+@Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @EqualsAndHashCode(of = {"email"})
