@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @Builder
 public class UserDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     long id;
     @NotBlank
     @Email
