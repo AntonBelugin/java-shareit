@@ -104,9 +104,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllByOwner(long ownerId, String stateStr) {
-        BookingState state = BookingState.valueOf(stateStr.toUpperCase()); //исключение ?
-        userService.findById(ownerId);// если есть вещь
-        System.out.println(ownerId);
+        BookingState state = BookingState.valueOf(stateStr.toUpperCase());
+        userService.findById(ownerId);
         switch (state) {
             case ALL:
                 return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId).stream()

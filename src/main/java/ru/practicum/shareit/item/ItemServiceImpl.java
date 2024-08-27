@@ -100,8 +100,6 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(long userId, long itemId, CommentDto comment) {
         User user = UserMapper.modelFromDto(userService.findById(userId));
         Item item = ItemMapper.modelFromDto(findById(userId, itemId));
-        System.out.println(bookingRepository
-                .findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()));
         if (bookingRepository
                 .findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
             throw new ValidationException("Вы не можете оставить комментарий," +
