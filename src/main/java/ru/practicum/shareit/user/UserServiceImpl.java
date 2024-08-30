@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictDataException;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -20,7 +19,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     final UserRepository repository;
-    private final UserRepository userRepository;
 
     @Override
     public UserDto add(UserDto user) {
@@ -30,34 +28,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findById(long id) {
-        return UserMapper.modelToDto(getUser(id));
+        return UserMapper.modelToDto(repository.getUserById(id));
     }
 
     @Override
     public void deleteById(long id) {
-        getUser(id);
+        repository.getUserById(id);
         repository.deleteById(id);
     }
 
     @Override
     public UserDto update(long id, UserDto user) {
         UserValidator.validateFormat(user);
+        user.setId(id);
         checkEmail(user);
-        User oldUser = getUser(id);
+        User oldUser = repository.getUserById(id);
         oldUser.setEmail(Optional.ofNullable(user.getEmail()).filter(email
                 -> !email.isBlank()).orElse(oldUser.getEmail()));
         oldUser.setName(Optional.ofNullable(user.getName()).filter(name
                 -> !name.isBlank()).orElse(oldUser.getName()));
         return UserMapper.modelToDto(repository.save(oldUser));
-    }
-
-    private User getUser(long id) {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new NotFoundException("Пользователя с id " + id + " не существует");
-        }
     }
 
     private void checkEmail(UserDto user) {

@@ -5,18 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.exception.AccessDeniedException;
 import ru.practicum.shareit.exception.ConflictDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -29,15 +27,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     final ItemRepository itemRepository;
-    final UserService userService;
-    final ItemService itemService;
+    final UserRepository userRepository;
     final BookingRepository bookingRepository;
 
     @Override
-    public BookingDto add(long userId, BookingDto booking) {
-        User booker = UserMapper.modelFromDto(userService.findById(userId));
+    public BookingDtoResponse add(long userId, BookingDtoRequest booking) {
+        User booker = userRepository.getUserById(userId);
         checkItem(booking.getItemId());
-        Item item = ItemMapper.modelFromDto(itemService.findById(userId, booking.getItemId()));
+        Item item = itemRepository.getItemById(booking.getItemId());
         Booking newBooking = BookingMapper.modelFromDto(booking, booker, item);
         newBooking.setStatus(BookingStatus.WAITING);
         Booking addBooking = bookingRepository.save(newBooking);
@@ -45,8 +42,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto approved(long userId, long bookingId, Boolean approved) {
-        Booking booking = getBooking(bookingId);
+    public BookingDtoResponse approved(long userId, long bookingId, Boolean approved) {
+        Booking booking = bookingRepository.getBookingById(bookingId);
         checkRightApproved(booking, userId);
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
@@ -57,16 +54,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto findById(long userId, long id) {
-        Booking booking = getBooking(id);
+    public BookingDtoResponse findById(long userId, long id) {
+        Booking booking = bookingRepository.getBookingById(id);
         checkRightLook(booking, userId);
         return BookingMapper.modelToDto(booking);
     }
 
     @Override
-    public List<BookingDto> getAllByBooker(long bookerId, String stateStr) {
+    public List<BookingDtoResponse> getAllByBooker(long bookerId, String stateStr) {
         BookingState state = BookingState.findBy(stateStr);
-        userService.findById(bookerId);
+        userRepository.getUserById(bookerId);
         switch (state) {
             case ALL:
                 return bookingRepository.findByBookerIdOrderByStartDesc(bookerId).stream()
@@ -103,9 +100,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllByOwner(long ownerId, String stateStr) {
+    public List<BookingDtoResponse> getAllByOwner(long ownerId, String stateStr) {
         BookingState state = BookingState.valueOf(stateStr.toUpperCase());
-        userService.findById(ownerId);
+        userRepository.getUserById(ownerId);
         switch (state) {
             case ALL:
                 return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId).stream()
@@ -138,7 +135,6 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new ConflictDataException("Введен неправильный статус");
         }
-
     }
 
     private void checkItem(long id) {
@@ -163,15 +159,6 @@ public class BookingServiceImpl implements BookingService {
         if (!itemRepository.findById(booking.getItem().getId())
                 .get().getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Вам недоступно подтверждение бронирования");
-        }
-    }
-
-    private Booking getBooking(long id) {
-        Optional<Booking> booking = bookingRepository.findById(id);
-        if (booking.isPresent()) {
-            return booking.get();
-        } else {
-            throw new NotFoundException("Бронирование с id " + id + " не существует");
         }
     }
 }

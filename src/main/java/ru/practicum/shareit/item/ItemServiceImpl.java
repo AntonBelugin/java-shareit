@@ -8,21 +8,19 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
@@ -30,23 +28,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     final ItemRepository itemRepository;
-    final UserService userService;
+    final UserRepository userRepository;
     final BookingRepository bookingRepository;
     final CommentRepository commentRepository;
 
     @Override
-    public ItemDto add(long userId, ItemDto item) {
-        userService.findById(userId);
+    public ItemDtoResponse add(long userId, ItemDtoRequest item) {
+        userRepository.getUserById(userId);
         Item newItem = ItemMapper.modelFromDto(item);
         newItem.setOwnerId(userId);
         Item addItem = itemRepository.save(newItem);
-        return ItemMapper.modelToDto(addItem);
+        return ItemMapper.modelToDtoResponse(addItem);
     }
 
     @Override
-    public ItemDto findById(long userId, long id) {
-        Item item = getItem(id);
-        ItemDto itemDto = ItemMapper.modelToDto(item);
+    public ItemDtoWithComments findById(long userId, long id) {
+        Item item = itemRepository.getItemById(id);
+        ItemDtoWithComments itemDto = ItemMapper.mapToDtoWithComments(item);
         if (userId == item.getOwnerId()) {
             List<Booking> bookings = bookingRepository
                     .findAllByItemIdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now());
@@ -61,12 +59,15 @@ public class ItemServiceImpl implements ItemService {
                 itemDto.setNextBooking(nextBooking.getStart());
             }
         }
+        itemDto.setComments(commentRepository.findByItemId(id).stream()
+                .map(CommentMapper::modelToDtoResponse)
+                .toList());
         return itemDto;
     }
 
     @Override
-    public ItemDto update(long userId, long itemId, ItemDto item) {
-        Item oldItem = getItem(itemId);
+    public ItemDtoResponse update(long userId, long itemId, ItemDtoRequest item) {
+        Item oldItem = itemRepository.getItemById(itemId);
         checkOwner(userId, itemId);
         oldItem.setName(Optional.ofNullable(item.getName()).filter(name
                 -> !name.isBlank()).orElse(oldItem.getName()));
@@ -74,32 +75,53 @@ public class ItemServiceImpl implements ItemService {
                 -> !description.isBlank()).orElse(oldItem.getDescription()));
         oldItem.setAvailable(Optional.ofNullable(item.getAvailable()).filter(available
                 -> available.describeConstable().isPresent()).orElse(oldItem.getAvailable()));
-        item.setId(itemId);
-        return ItemMapper.modelToDto(itemRepository.save(oldItem));
+        return ItemMapper.modelToDtoResponse(itemRepository.save(oldItem));
     }
 
     @Override
-    public List<ItemDto> findItemsByUser(long id) {
-        return  itemRepository.findByOwnerId(id).stream()
-             .map(ItemMapper::modelToDto).toList();
+    public List<ItemDtoWithComments> findItemsByUser(long id) {
+        Map<Long, Item> itemMap = itemRepository.findAllByOwnerId(id)
+                .stream()
+                .collect(Collectors.toMap(Item::getId, Function.identity()));
+        Map<Long, List<Comment>> commentMap = commentRepository.findAllByItemIdIn((itemMap.keySet()))
+                .stream()
+                .collect(Collectors.groupingBy(Comment::getItemId));
+        return itemMap.values()
+                .stream()
+                .map(item -> makePostWithCommentsDto(
+                        item,
+                        commentMap.getOrDefault(item.getId(), Collections.emptyList())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private ItemDtoWithComments makePostWithCommentsDto(Item item, List<Comment> comments) {
+        List<CommentDtoResponse
+                > commentDtos = comments
+                .stream()
+                .map(CommentMapper::modelToDtoResponse)
+                .collect(Collectors.toList());
+        ItemDtoWithComments itemDtoWithComments = ItemMapper.mapToDtoWithComments(item);
+        itemDtoWithComments.setComments(commentDtos);
+        return itemDtoWithComments;
     }
 
     @Override
-    public List<ItemDto> searchByText(String text) {
+    public List<ItemDtoResponse> searchByText(String text) {
         if (text == null || text.isEmpty()) {
             return new ArrayList<>();
         } else {
             return itemRepository
                     .findByAvailableTrueAndNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text)
                     .stream()
-                    .map(ItemMapper::modelToDto).toList();
+                    .map(ItemMapper::modelToDtoResponse).toList();
         }
     }
 
     @Override
-    public CommentDto addComment(long userId, long itemId, CommentDto comment) {
-        User user = UserMapper.modelFromDto(userService.findById(userId));
-        Item item = ItemMapper.modelFromDto(findById(userId, itemId));
+    public CommentDtoResponse addComment(long userId, long itemId, CommentDtoRequest comment) {
+        User user = userRepository.getUserById(userId);
+        itemRepository.getItemById(itemId);
         if (bookingRepository
                 .findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
             throw new ValidationException("Вы не можете оставить комментарий," +
@@ -107,31 +129,22 @@ public class ItemServiceImpl implements ItemService {
         }
         Comment addComment = CommentMapper.modelFromDto(comment);
         addComment.setAuthor(user);
-        addComment.setItem(item);
+        addComment.setItemId(itemId);
         addComment.setCreated(LocalDateTime.now());
-        return CommentMapper.modelToDto(commentRepository.save(addComment));
+        return CommentMapper.modelToDtoResponse(commentRepository.save(addComment));
     }
 
     @Override
-    public List<ItemDto> findAll() {
+    public List<ItemDtoResponse> findAll() {
         return itemRepository.findAll().stream()
-                .map(ItemMapper::modelToDto)
+                .map(ItemMapper::modelToDtoResponse)
                 .toList();
     }
 
     private void checkOwner(long userId, long itemId) {
-        if (userId != getItem(itemId).getOwnerId()) {
+        if (userId != itemRepository.getItemById(itemId).getOwnerId()) {
             throw new NotFoundException("Вещь с id " + itemId +
                     " не принадлежит пользователю с id " + userId);
-        }
-    }
-
-    private Item getItem(long id) {
-        Optional<Item> item = itemRepository.findById(id);
-        if (item.isPresent()) {
-            return item.get();
-        } else {
-            throw new NotFoundException("Вещь с id " + id + " не существует");
         }
     }
 }

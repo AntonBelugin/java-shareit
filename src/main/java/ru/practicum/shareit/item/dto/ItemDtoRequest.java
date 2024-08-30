@@ -1,8 +1,7 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.item.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +12,13 @@ import ru.practicum.shareit.validation.ValidationMarker;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
-public class UserDto {
-    long id;
-    @NotEmpty(groups = ValidationMarker.OnCreate.class)
-    @Email
-    @Length(max = 512)
-    String email;
+public class ItemDtoRequest {
     @NotBlank(groups = ValidationMarker.OnCreate.class)
     @Length(max = 255)
     String name;
+    @NotBlank(groups = ValidationMarker.OnCreate.class)
+    @Length(max = 512)
+    String description;
+    @NotNull(groups = ValidationMarker.OnCreate.class)
+    Boolean available;
 }

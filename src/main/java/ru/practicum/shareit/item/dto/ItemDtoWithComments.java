@@ -8,16 +8,12 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-
-/**
- * TODO Sprint add-controllers.
- */
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
-public class ItemDto {
+public class ItemDtoWithComments {
     long id;
     @NotBlank
     String name;
@@ -25,7 +21,7 @@ public class ItemDto {
     String description;
     @NotNull
     Boolean available;
-    Set<String> comments;
+    List<CommentDtoResponse> comments;
     LocalDateTime lastBooking;
     LocalDateTime nextBooking;
 }

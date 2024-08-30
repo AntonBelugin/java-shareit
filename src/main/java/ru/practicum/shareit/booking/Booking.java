@@ -9,14 +9,11 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-/**
- *  TODO Sprint add-bookings.
- */
-
 @Entity
 @Table(name = "bookings")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,10 +21,10 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "booker")
     User booker;
     @Enumerated(EnumType.STRING)
