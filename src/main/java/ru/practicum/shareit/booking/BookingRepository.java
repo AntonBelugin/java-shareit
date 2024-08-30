@@ -11,7 +11,6 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     default Booking getBookingById(long id) {
         return findById(id).orElseThrow(() -> new NotFoundException("Бронирование с id " + id + " не существует"));
-
     }
     List<Booking> findByBookerIdOrderByStartDesc(Long id);
 
