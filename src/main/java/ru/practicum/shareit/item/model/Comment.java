@@ -22,7 +22,7 @@ public class Comment {
     Long id;
     @Column(name = "item_id")
     long itemId;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author")
     User author;
     @NotNull

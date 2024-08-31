@@ -122,8 +122,8 @@ public class ItemServiceImpl implements ItemService {
     public CommentDtoResponse addComment(long userId, long itemId, CommentDtoRequest comment) {
         User user = userRepository.getUserById(userId);
         itemRepository.getItemById(itemId);
-        if (bookingRepository
-                .findAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now()).isEmpty()) {
+        if (!bookingRepository
+                .existsAllByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now())) {
             throw new ValidationException("Вы не можете оставить комментарий," +
                     " потому что не бронировали вещь с id " + itemId);
         }

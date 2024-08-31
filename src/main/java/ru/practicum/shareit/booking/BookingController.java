@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
+import ru.practicum.shareit.constants.Constants;
 
 import java.util.List;
 
@@ -13,32 +14,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
-    static final String HEADER_USER = "X-Sharer-User-Id";
 
     @PostMapping
-    public BookingDtoResponse create(@RequestHeader(HEADER_USER) long userId, @Valid @RequestBody BookingDtoRequest booking) {
+    public BookingDtoResponse create(@RequestHeader(Constants.HEADER_USER) long userId, @Valid @RequestBody BookingDtoRequest booking) {
         return bookingService.add(userId, booking);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDtoResponse approved(@RequestHeader(HEADER_USER) long userId, @PathVariable long bookingId,
+    public BookingDtoResponse approved(@RequestHeader(Constants.HEADER_USER) long userId, @PathVariable long bookingId,
                                        @RequestParam(defaultValue = "") Boolean approved) {
         return bookingService.approved(userId, bookingId, approved);
     }
 
     @GetMapping("/{id}")
-    public BookingDtoResponse findById(@RequestHeader(HEADER_USER) long userId, @PathVariable long id) {
+    public BookingDtoResponse findById(@RequestHeader(Constants.HEADER_USER) long userId, @PathVariable long id) {
         return bookingService.findById(userId, id);
     }
 
     @GetMapping
-    public List<BookingDtoResponse> getAllByBooker(@RequestHeader(HEADER_USER) long bookerId,
+    public List<BookingDtoResponse> getAllByBooker(@RequestHeader(Constants.HEADER_USER) long bookerId,
                                                   @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getAllByBooker(bookerId, state);
     }
 
     @GetMapping("owner/")
-    public List<BookingDtoResponse> getAllByOwner(@RequestHeader(HEADER_USER) long ownerId,
+    public List<BookingDtoResponse> getAllByOwner(@RequestHeader(Constants.HEADER_USER) long ownerId,
                                                  @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getAllByOwner(ownerId, state);
     }
