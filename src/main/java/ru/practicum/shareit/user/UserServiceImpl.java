@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ConflictDataException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -16,34 +18,44 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    final UserStorage userStorage;
+    final UserRepository repository;
 
     @Override
     public UserDto add(UserDto user) {
-        return UserMapper.modelToDto(userStorage.add(UserMapper.modelFromDto(user)));
+        checkEmail(user);
+       return UserMapper.modelToDto(repository.save(UserMapper.modelFromDto(user)));
     }
 
     @Override
     public UserDto findById(long id) {
-        userStorage.checkUser(id);
-        return UserMapper.modelToDto(userStorage.findById(id));
+        return UserMapper.modelToDto(repository.getUserById(id));
     }
 
     @Override
     public void deleteById(long id) {
-        userStorage.checkUser(id);
-        userStorage.deleteById(id);
+        repository.getUserById(id);
+        repository.deleteById(id);
     }
 
     @Override
     public UserDto update(long id, UserDto user) {
-        userStorage.checkUser(id);
         UserValidator.validateFormat(user);
-        User oldUser = userStorage.findById(id);
+        user.setId(id);
+        checkEmail(user);
+        User oldUser = repository.getUserById(id);
         oldUser.setEmail(Optional.ofNullable(user.getEmail()).filter(email
                 -> !email.isBlank()).orElse(oldUser.getEmail()));
         oldUser.setName(Optional.ofNullable(user.getName()).filter(name
                 -> !name.isBlank()).orElse(oldUser.getName()));
-        return UserMapper.modelToDto(userStorage.update(id, oldUser));
+        return UserMapper.modelToDto(repository.save(oldUser));
+    }
+
+    private void checkEmail(UserDto user) {
+        List<User> users = repository.findByEmailContainingIgnoreCase(user.getEmail());
+        if (!users.isEmpty()) {
+            if (user.getEmail().equals(users.getFirst().getEmail()) && user.getId() != users.getFirst().getId()) {
+                throw new ConflictDataException("Такой email уже используется");
+            }
+        }
     }
 }
