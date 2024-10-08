@@ -1,0 +1,33 @@
+package ru.practicum.shareit.item.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.request.model.Request;
+
+@Entity
+@Table(name = "items")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@Builder
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @NotNull
+    String name;
+    @NotNull
+    String description;
+    @NotNull
+    Boolean available;
+    @Column(name = "owner_id")
+    Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    Request request;
+}
