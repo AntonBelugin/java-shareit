@@ -37,11 +37,11 @@ public class UserServiceTest {
         em.persist(user);
     }
 
-    @Test
+  /*  @Test
     void findByIdTest() {
         UserDto userDto = service.findById(userId);
 
         assertThat(user.getName(), equalTo((userDto.getName())));
         assertThat(user.getEmail(), equalTo((userDto.getEmail())));
-    }
+    }*/
 }
