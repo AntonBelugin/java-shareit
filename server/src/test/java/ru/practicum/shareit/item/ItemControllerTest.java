@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.constants.Constants;
 import ru.practicum.shareit.item.dto.*;
 
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -141,8 +140,7 @@ public class ItemControllerTest {
         mockMvc.perform(get("/items/search?text={text}", string)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString
-                        (Collections.singletonList(itemDtoResponse))));
+                .andExpect(content().json(mapper.writeValueAsString(Collections.singletonList(itemDtoResponse))));
     }
 
     @Test

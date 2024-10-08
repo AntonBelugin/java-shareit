@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.constants.Constants;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.user.dto.UserDtoForBooking;
 
