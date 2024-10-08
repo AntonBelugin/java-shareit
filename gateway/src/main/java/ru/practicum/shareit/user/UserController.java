@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserRequestDto;
-import ru.practicum.shareit.validation.ValidationMarker;
 
 @RestController
 @RequestMapping(path = "/users")
