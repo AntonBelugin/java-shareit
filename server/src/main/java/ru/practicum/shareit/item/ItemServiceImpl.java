@@ -36,9 +36,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoResponse add(long userId, ItemDtoRequest item) {
-        userRepository.getUserById(userId);
+        User user = userRepository.getUserById(userId);
         Item newItem = ItemMapper.modelFromDto(item);
-        newItem.setOwnerId(userId);
+        newItem.setOwner(user);
         if (item.getRequestId() != null) {
             Request request = requestRepository.getItemRequestBy(item.getRequestId());
             newItem.setRequest(request);
@@ -127,7 +127,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void checkOwner(long userId, long itemId) {
-        if (userId != itemRepository.getItemById(itemId).getOwnerId()) {
+        if (userId != itemRepository.getItemById(itemId).getOwner().getId()) {
             throw new NotFoundException("Вещь с id " + itemId +
                     " не принадлежит пользователю с id " + userId);
         }

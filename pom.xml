@@ -175,7 +175,7 @@
 						<artifactId>maven-checkstyle-plugin</artifactId>
 					</plugin>
 					<plugin>
-						<groupId>com.github.spotbugs</groupId>
+						<groupId>com.github.spotbus</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
 					</plugin>
 				</plugins>

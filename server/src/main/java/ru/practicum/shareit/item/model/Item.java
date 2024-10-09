@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.user.model.User;
 
 @Entity
 @Table(name = "items")
@@ -25,8 +26,9 @@ public class Item {
     String description;
     @NotNull
     Boolean available;
-    @Column(name = "owner_id")
-    Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    User owner;
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     Request request;

@@ -3,10 +3,15 @@ package ru.practicum.shareit.user;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @Transactional
 @SpringBootTest(
@@ -17,7 +22,7 @@ public class UserServiceTest {
     private final EntityManager em;
     private final UserService service;
 
-    Long userId;
+    long userId;
     User user;
 
     @BeforeEach
@@ -32,11 +37,12 @@ public class UserServiceTest {
         em.persist(user);
     }
 
-  /*  @Test
+    @Test
     void findByIdTest() {
-        UserDto userDto = service.findById(userId);
+        System.out.println(user);
+        UserDto userDto = service.findById(user.getId());
 
         assertThat(user.getName(), equalTo((userDto.getName())));
         assertThat(user.getEmail(), equalTo((userDto.getEmail())));
-    }*/
+    }
 }

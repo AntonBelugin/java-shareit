@@ -150,14 +150,14 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkRightLook(Booking booking, long userId) {
         if (!booking.getBooker().getId().equals(userId) && !itemRepository.findById(booking.getItem().getId())
-                .get().getOwnerId().equals(userId)) {
+                .get().getOwner().getId().equals(userId)) {
             throw new ValidationException("Вам недоступен просмотр бронирования");
             }
     }
 
     private void checkRightApproved(Booking booking, long userId) {
         if (!itemRepository.findById(booking.getItem().getId())
-                .get().getOwnerId().equals(userId)) {
+                .get().getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("Вам недоступно подтверждение бронирования");
         }
     }

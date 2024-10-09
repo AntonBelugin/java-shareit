@@ -17,6 +17,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+
 @Transactional
 @SpringBootTest(
         properties = "jdbc.url=jdbc:postgresql://localhost:5432/test",
@@ -41,6 +42,7 @@ public class BookingServiceTest {
                 .email(userEmail)
                 .build();
         em.persist(user);
+        System.out.println(user);
 
         String itemName = "itemName";
         String description = "description";
@@ -49,7 +51,7 @@ public class BookingServiceTest {
                 .name(itemName)
                 .description(description)
                 .available(isAvailable)
-                .ownerId(userId)
+                .owner(user)
                 .build();
         em.persist(item);
 
@@ -67,7 +69,7 @@ public class BookingServiceTest {
 
     @Test
     void getAllByBookerTest() {
-        List<BookingDtoResponse> bookingList = service.getAllByBooker(userId, "all");
+        List<BookingDtoResponse> bookingList = service.getAllByBooker(user.getId(), "all");
 
         assertThat(booking.getBooker().getId(), equalTo((bookingList.getFirst().getBooker().getId())));
         assertThat(booking.getItem().getName(), equalTo((bookingList.getFirst().getItem().getName())));

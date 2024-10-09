@@ -42,7 +42,7 @@ public final class ItemMapper {
         return ItemDtoForRequest.builder()
                 .id(item.getId())
                 .name(item.getName())
-                .ownerId(item.getOwnerId())
+                .ownerId(item.getOwner().getId())
                 .build();
     }
 
