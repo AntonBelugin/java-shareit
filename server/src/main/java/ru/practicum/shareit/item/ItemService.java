@@ -5,7 +5,7 @@ import ru.practicum.shareit.item.dto.*;
 import java.util.List;
 
 public interface ItemService {
-    ItemDtoWithComments findById(/*long userId, */long id);
+    ItemDtoWithComments findById(long id);
 
     ItemDtoResponse add(long id, ItemDtoRequest item);
 

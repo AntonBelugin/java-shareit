@@ -8,12 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.constants.Constants;
 import ru.practicum.shareit.request.dto.RequestDto;
 
-@RestController
+@Controller
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor

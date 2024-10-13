@@ -18,10 +18,10 @@ public class UserRequestDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     long id;
     @NotNull(groups = ValidationMarker.OnCreate.class)
-    @Email
-    @Length(max = 512)
+    @Email(groups = {ValidationMarker.OnCreate.class, ValidationMarker.OnUpdate.class})
+    @Length(max = 512, groups = {ValidationMarker.OnCreate.class, ValidationMarker.OnUpdate.class})
     String email;
     @NotBlank(groups = ValidationMarker.OnCreate.class)
-    @Length(max = 255)
+    @Length(max = 255, groups = {ValidationMarker.OnCreate.class, ValidationMarker.OnUpdate.class})
     String name;
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.constants.Constants;
@@ -32,7 +33,7 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Object> update(@RequestHeader(Constants.HEADER_USER) long userId, @PathVariable long id,
-                                  @RequestBody ItemDtoRequest item) {
+                                  @RequestBody @Valid ItemDtoRequest item) {
         return itemClient.updateItem(userId, id, item);
     }
 
@@ -47,6 +48,9 @@ public class ItemController {
     public ResponseEntity<Object> searchByText(@RequestParam String text,
                                                @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        if (text.isBlank()) {
+            return ResponseEntity.noContent().build();
+        }
         return itemClient.searchItems(text, from, size);
     }
 
